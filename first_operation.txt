@@ -1,0 +1,345 @@
+あなたには、このプロジェクトにおけるAI開発支援環境を構築してほしい。
+
+目的は、Antigravityをメイン開発環境として使いながら、Codex CLI、Git/GitHub、検索MCP、論文調査メモ、外部GitHubコード調査を組み合わせて、初心者でも安全に開発・調査・実装・レビューを進められる環境を作ることである。
+
+私はGitやAI開発環境にまだ慣れていないため、勝手に大きな変更を進めず、各作業の前に「何をするか」「なぜするか」「どのファイルを触るか」を日本語で説明してほしい。
+
+# 全体方針
+
+このプロジェクトでは、以下の役割分担で進める。
+
+* Antigravity：メイン開発環境、実装、UI確認、動作確認、プロジェクト全体の司令塔
+* Codex CLI：補助エージェント、GitHub整理、差分レビュー、エラー調査、論文調査、外部コード調査
+* Git/GitHub：AIが壊しても戻れるセーブ地点、履歴管理、バックアップ
+* 検索MCP：外部知識、公式ドキュメント、エラー事例、論文、GitHubコードの調査
+* docs/research/：調査結果の保存場所
+* docs/implementation_plans/：実装計画の保存場所
+* external_repos/：外部論文コードや参考リポジトリを一時的にcloneして読む場所。ただしGit管理には含めない
+
+# まずやってほしいこと
+
+まず、このプロジェクト直下のファイル構成を確認してほしい。
+
+もし以下のファイルやフォルダが存在する場合は、それらを読んで現在の方針を理解すること。
+
+* AGENTS.md
+* .agent/rules/
+* docs/agent_rules/
+* docs/templates/
+* docs/research_requests/
+* docs/research/
+* docs/implementation_plans/
+* docs/reproduction/
+* external_repos/
+
+もし存在しない場合は、以下の構成を作成してほしい。
+
+```text
+AGENTS.md
+.agent/
+  rules/
+    00_project_ai_workflow.md
+docs/
+  agent_rules/
+    README.md
+    codex_collaboration.md
+    github_workflow.md
+    search_research_workflow.md
+    paper_to_code_workflow.md
+    external_code_policy.md
+    error_investigation.md
+  templates/
+    research_request_template.md
+    paper_implementation_research_memo_template.md
+    implementation_plan_template.md
+    external_repo_record_template.md
+    error_investigation_report_template.md
+    pr_summary_template.md
+  research_requests/
+  research/
+  implementation_plans/
+  reproduction/
+external_repos/
+```
+
+さらに、外部リポジトリを自分のGitHubへ混ぜないため、.gitignoreに以下を追加すること。
+
+```gitignore
+external_repos/
+.env
+.env.*
+*.key
+*.pem
+__pycache__/
+*.pyc
+```
+
+すでに.gitignoreがある場合は、重複しないように追記してほしい。
+
+# 常時読む基本ルールと詳細ルールの分離
+
+毎回長いルールを全部読むと負担が大きいため、常時読むファイルには短い基本ルールだけを書く。
+
+詳細ルールは docs/agent_rules/ に分けて保存し、必要になったときだけ読むこと。
+
+たとえば、
+
+* Codex CLIを使うとき：docs/agent_rules/codex_collaboration.md を読む
+* GitHubへpushするとき：docs/agent_rules/github_workflow.md を読む
+* 検索や調査が必要なとき：docs/agent_rules/search_research_workflow.md を読む
+* 論文から実装する場合：docs/agent_rules/paper_to_code_workflow.md を読む
+* 外部GitHubコードを扱うとき：docs/agent_rules/external_code_policy.md を読む
+* エラー調査を行うとき：docs/agent_rules/error_investigation.md を読む
+
+AGENTS.mdと.agent/rules/00_project_ai_workflow.mdには、この誘導方針を短く書いてほしい。
+
+# Git / GitHub運用
+
+Gitは、AIが壊しても戻れるセーブ地点として使う。
+
+初心者向けに、難しいブランチ運用は最初は必須にしない。まずは以下の最小運用でよい。
+
+* 作業前に git status を確認する
+* 大きな変更前にはcommitする
+* AIが複数ファイルを変更した後は、git diff --stat で差分を確認する
+* 変更内容を説明してからcommitする
+* 作業の区切りでpushする
+* ユーザーの許可なく git reset --hard、git restore .、git push --force は実行しない
+* APIキー、パスワード、個人情報、大容量データをcommitしない
+
+私が「プッシュして」「GitHubに上げて」「保存して」と言った場合は、以下の流れで進めてほしい。
+
+1. git status を確認する
+2. 変更がなければ報告して終了する
+3. git diff --stat を確認する
+4. 必要ならCodex CLIに差分要約を依頼する
+5. 変更内容、変更ファイル、注意点、commitメッセージ案を日本語で説明する
+6. 明らかに危険な変更や秘密情報が含まれていないか確認する
+7. 問題なければ git add、git commit、git push を実行する
+8. 実行結果を日本語で報告する
+
+# Codex CLIの使い方
+
+Codex CLIは、Antigravityの代わりではなく補助エージェントとして使う。
+
+主な役割は以下とする。
+
+* git diff の要約
+* commitメッセージ案の作成
+* Pull Request本文案の作成
+* README / TODO / AGENTS.md の更新案作成
+* コードレビュー
+* エラー原因調査
+* テスト失敗ログの原因分析
+* 論文検索・要約・比較
+* 外部GitHubコードの調査
+* 実装計画の作成
+* Antigravity側で次にやるべきことの整理
+
+Codexを呼ぶときは、原則として最初は「ファイル変更なし」で調査・レビュー・要約をさせること。
+
+大きな修正をCodexに直接させるのではなく、まず原因候補、根拠、確認方法、修正方針を出させること。
+
+AntigravityとCodexが同時に同じファイルを編集しないように注意すること。
+
+# エラー調査の運用
+
+エラーが発生した場合、Codexを「計測・検査・原因推定係」として使ってよい。
+
+ただし、最初から修正させず、まず以下を行うこと。
+
+1. エラーログを読む
+2. 原因候補を最大3つに絞る
+3. 各候補の根拠を示す
+4. 関係しそうなファイルを示す
+5. 安全な確認コマンドを提案する
+6. 必要なら安全な確認コマンドだけ実行する
+7. 修正対象ファイルと修正方針を示す
+8. Antigravity側で次に行うべき作業を整理する
+
+エラー調査結果は、必要に応じて以下に保存する。
+
+```text
+docs/reproduction/
+docs/research/
+```
+
+# 検索・調査の運用
+
+外部知識が必要な場合、推測だけで実装しない。
+
+Antigravityが直接検索を頑張るのではなく、必要に応じて調査タスクを発行する。
+
+基本の流れは以下とする。
+
+1. Antigravityが知りたいことを整理する
+2. docs/research_requests/ に調査依頼書を作る
+3. Codex CLIや検索MCPを使って調査する
+4. 調査結果を docs/research/ にMarkdownで保存する
+5. Antigravityはその調査メモを読んで実装する
+
+検索・調査では以下を優先する。
+
+* ライブラリ、API、フレームワークの仕様確認：Context7またはRef MCP
+* 一般Web検索、技術記事、エラー事例：Tavily MCP
+* Google Cloud、Firebase、Android、MapsなどGoogle製品：Google Developer Knowledge MCP
+* GitHubリポジトリ確認：GitHub MCPまたはブラウザ
+* 論文検索：Semantic Scholar、arXiv、OpenReview、Crossref、Unpaywall、Tavily
+
+検索結果をそのまま大量に貼り付けるのではなく、実装に必要な要点だけをまとめること。
+
+調査メモには必ず以下を書く。
+
+* 調査目的
+* 検索した質問
+* 参照した情報源
+* 分かったこと
+* 実装に使う判断
+* 不確かな点
+* Antigravityが次に行うこと
+
+# 論文から実装する場合
+
+情報系・機械学習系・点群処理系の論文を参考に実装する場合、いきなりコードを書かない。
+
+必ず以下の順に進める。
+
+1. Antigravityが目的を調査依頼書にする
+2. Codexが論文検索・コード検索・要約・比較をする
+3. 論文APIや検索MCPを使う
+4. 結果を docs/research/ に保存する
+5. CodexまたはAntigravityが docs/implementation_plans/ に実装計画を作る
+6. Antigravityがその調査メモと実装計画を読んで最小実装を行う
+7. Codexが論文仕様・公式コードとの差分をレビューする
+
+論文要約は、普通の要約ではなく、実装向けにまとめること。
+
+特に以下を確認する。
+
+* 入力形式
+* 出力形式
+* 前処理
+* アルゴリズムの手順
+* 数式とコードの対応
+* 必要なデータセット
+* 必要なライブラリ
+* 評価指標
+* 著者公式コードの有無
+* 第三者実装の有無
+* requirements / environment.yml
+* README
+* issueで報告されているエラー
+* 最新APIとのズレ
+* 自分のプロジェクトに使える部分
+* 使わない方がよい部分
+* 最小実装案
+
+論文本文だけを根拠に完成コードを一気に生成しないこと。
+
+# 外部GitHubコードの扱い
+
+論文にGitHubコードや参考実装がある場合、いきなり自分のプロジェクトに混ぜない。
+
+まずGitHub上、ブラウザ、GitHub MCPなどで以下を確認する。
+
+* 公式リポジトリか
+* README
+* ライセンス
+* requirements / environment.yml
+* 主要ファイル
+* データセットの有無
+* 事前学習済みモデルの有無
+* 最終更新日
+* issueで報告されている問題
+* 自分のプロジェクトに使えそうな部分
+
+読むだけならローカルにcloneしなくてよい。
+
+ただし、深く検索する、実行する、依存関係を確認する、コード全体を読む必要がある場合は、external_repos/ にcloneしてよい。
+
+cloneする場合は、まず浅いcloneを優先する。
+
+```bash
+mkdir -p external_repos
+cd external_repos
+git clone --depth 1 <repository_url>
+```
+
+大きなリポジトリの場合は、必要に応じて sparse checkout を検討する。
+
+external_repos/ は自分のGitHubにはpushしない。
+
+外部コードを参考にした場合は、必ず docs/research/ に以下を記録する。
+
+* 論文名
+* GitHub URL
+* 取得日
+* commit hash
+* ライセンス
+* 参考にしたファイル
+* 参考にした処理
+* 自分の実装に取り込む内容
+* そのままコピーしない理由
+* 注意点
+
+自分のプロジェクトには、外部リポジトリを丸ごとコピーせず、必要な考え方や最小構成だけを自分の設計に合わせて実装すること。
+
+# 作ってほしいテンプレート
+
+docs/templates/ に以下のテンプレートを作成してほしい。
+
+1. research_request_template.md
+
+   * 調査依頼書
+   * 何を知りたいか、背景、検索条件、出力形式を書く
+
+2. paper_implementation_research_memo_template.md
+
+   * 論文実装調査メモ
+   * 論文一覧、入力、出力、手法、コード、データ、再現性、採用可否を書く
+
+3. implementation_plan_template.md
+
+   * 実装計画書
+   * 実装目的、対象ファイル、最小実装、やらないこと、確認方法を書く
+
+4. external_repo_record_template.md
+
+   * 外部リポジトリ記録
+   * URL、commit hash、license、参考ファイル、使う処理を書く
+
+5. error_investigation_report_template.md
+
+   * エラー調査報告
+   * エラー内容、原因候補、根拠、確認コマンド、修正方針を書く
+
+6. pr_summary_template.md
+
+   * Pull Requestまたはpush前の変更要約
+   * 変更内容、変更ファイル、確認内容、未確認事項、注意点を書く
+
+# 今回の最初の作業
+
+まずは実装ではなく、環境構築とルール整備だけを行ってほしい。
+
+具体的には以下を行う。
+
+1. 現在のプロジェクト構成を確認する
+2. 既存のAGENTS.md、.agent/rules、docs配下があるか確認する
+3. 不足しているフォルダとテンプレートを作成する
+4. .gitignoreにexternal_repos/などを追加する
+5. Gitが初期化されていなければ、Git初期化の提案をする
+6. GitHubリモートが設定されているか確認する
+7. Codex CLIが使えるか確認するための方法を提示する
+8. Context7、Tavily、GitHub MCPなど検索MCP導入候補を整理する
+9. 最後に、作成・変更したファイル一覧と次に私が確認すべきことを日本語で報告する
+
+# 注意
+
+私は初心者なので、専門用語を使う場合は短く補足してほしい。
+
+一度に大量の実装変更をしないでほしい。
+
+この依頼では、まだアプリ本体の実装はしないでほしい。
+
+まずは、Antigravity、Codex、GitHub、検索MCP、論文調査、外部コード調査を安全に連携させるための環境とルールを整えることを優先してほしい。

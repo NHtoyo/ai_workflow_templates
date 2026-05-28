@@ -1,0 +1,30 @@
+# External reference repositories
+external_repos/
+
+# Environment / secrets
+.env
+.env.*
+*.pem
+*.key
+*.token
+
+# Large datasets / generated data
+_data/
+datasets/
+outputs/
+checkpoints/
+*.ckpt
+*.pth
+*.pt
+*.onnx
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
