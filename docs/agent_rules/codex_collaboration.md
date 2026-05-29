@@ -70,7 +70,7 @@ APIキーでCodexを使う場合は、ChatGPT Plus枠ではなくAPI課金にな
 
 ## Windows環境における非対話型呼び出しのエラー回避方法（HOWTO）
 
-Antigravityなどの外部エージェント（非対話型プログラム）から、Windows環境上のPowerShell経由でCodex CLIを呼び出す際、以下の3つの制限によりエラーが発生する場合があります。
+Antigravityなどの外部エージェント（非対話型プログラム）から、Windows環境上のPowerShell経由でCodex CLIを呼び出す際、以下の4つの制限によりエラーが発生する場合があります。
 
 ### 1. PowerShellのセキュリティ制限（ExecutionPolicy）
 - **現象**: `running scripts is disabled on this system.（このシステムではスクリプトの実行が無効になっています）` というエラーが発生し、インストールされた `codex.ps1` が実行できない。
@@ -91,6 +91,21 @@ Antigravityなどの外部エージェント（非対話型プログラム）か
   - **ワークスペース書き込み権限の付与**: Codex CLIの実行時オプションに `-s workspace-write`（または `--sandbox workspace-write`）を指定し、作業フォルダ内への書き込み権限を明示的に付与する。
   - **承認ポリシーの設定**: `-a never`（または `--ask-for-approval never`）を同時に指定し、非対話実行時に書き込み処理の承認確認プロンプトでフリーズするのを防ぐ。
   - **コマンド例**: `cmd.exe /c "codex.cmd -s workspace-write -a never exec \"(指示)\" < NUL"`
+
+### 4. Windows環境のエンコーディング制限による「文字化け（ハテナマーク `?`）」と「引数のエスケープエラー」
+- **現象**: 
+  - `powershell -Command "echo 'プロンプト' | codex"` のようにパイプで日本語の指示を渡すと、PowerShellの出力エンコーディングが原因でCodexに流れる文字がすべて `??????` と文字化けし、Codexが指示を理解できず「存在確認などの読み取り調査だけで終了する（ファイルを作成しない）」挙動になる。
+  - また、ダブルクォーテーションで囲んで引数として渡そうとすると、Windowsのコマンドライン解析仕様によりクォーテーションが剥がれ、スペース区切りの無効な引数エラー（`unexpected argument`）で起動に失敗する。
+- **回避策**:
+  - **一時プロンプトファイル（UTF-8）の活用**: 指示内容を一時テキストファイル（例: `prompt.txt`）としてUTF-8エンコードで書き出し、それを標準入力リダイレクト `<` を使用して流し込む。
+  - **UTF-8（65001）コードページの指定**: 実行時に `chcp 65001` コマンドを挟み、コマンドプロンプトの文字コードをUTF-8に強制指定する。
+  - **コマンド例**:
+    ```cmd
+    :: 1. 指示を prompt.txt にUTF-8で保存（エージェント側で実行）
+    :: 2. cmd.exe から文字コードを指定し、リダイレクトで実行
+    cmd.exe /c "chcp 65001 > NUL && codex.cmd exec --dangerously-bypass-approvals-and-sandbox < prompt.txt"
+    :: 3. 実行完了後に prompt.txt を削除
+    ```
 
 ## AIエージェント（Antigravity等）がCodexを呼び出す際の絶対厳守ルール
 
