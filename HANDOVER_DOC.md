@@ -129,3 +129,16 @@ AIエージェントが本プロジェクトで行った最新の実装状況や
   * [search_research_workflow.md](file:///C:/Users/islab/ai_workflow_templates/docs/agent_rules/search_research_workflow.md) : TavilyとBrave Searchの特徴と、無料枠における制限（クレジットカード登録の有無など）の解説を追記。
   * [HANDOVER_DOC.md](file:///C:/Users/islab/ai_workflow_templates/HANDOVER_DOC.md) : 引継ぎ・進捗管理の `HANDOVER_DOC.md` 一本化ポリシーを追加、不要な `.gemini/` 除外を解除。
 * **リモートコミットID**: `2aa06df` (および今回の進捗追記分)
+
+---
+
+## 🔍 技術的な調査・解析メモ
+
+### Codex CLI実行時のフリーズ問題と解決策 (Windows/PowerShell制限)
+
+* **エラーの原因**:
+  * PowerShell経由でバックグラウンド実行した際、Windowsのセキュリティ（ExecutionPolicy）によってプロファイルの読み込みがブロックされました。
+  * さらに、非対話実行（`-a never`）を行っていたため、Codex内部でユーザーに入力やツールの承認を求める処理が発生した際、標準入力（stdin）の応答待ち状態で完全にフリーズ（ハングアップ）してしまっていたことが原因でした。
+* **対応・解決策**:
+  * PowerShell環境固有の制限を回避するため、Codexを呼び出す際のシェルをコマンドプロンプト（`cmd.exe /c`）に切り替えました。
+  * 同時に、標準入力を強制的に遮断するコマンド（`< NUL`）を付与することで、「入力待ちによるフリーズ」を根本から防ぎ、非インタラクティブなバックグラウンドタスクとして安定稼働させる手法を確立しました。
