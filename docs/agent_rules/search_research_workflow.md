@@ -10,6 +10,8 @@ Antigravityに直接すべての検索を頑張らせるのではなく、調査
   - ライブラリ、API、フレームワークの公式ドキュメント確認。
 - Tavily / Brave Search:
   - 一般Web検索、エラー事例、技術記事、実装事例。
+  - **Tavily (AI特化型検索)**: AIが読み込むために作られた検索エンジン。不要なHTMLタグや広告等を取り除き、「要約された綺麗なテキスト」だけを返すため、AIの文字数消費（コンテキスト）を節約でき高速・高精度に調査できます。（※メール登録だけで無料枠のAPIキーが取得可能）
+  - **Brave Search (人間向け一般検索)**: 一般的な検索エンジンの結果を返します。※API利用には月1,000回までの無料枠がありますが、登録時にクレジットカード情報の登録が必要になる場合があります。
 - Google Developer Knowledge:
   - Google Cloud、Firebase、Android、MapsなどGoogle製品の公式確認。
 - GitHub Search / GitHub MCP:

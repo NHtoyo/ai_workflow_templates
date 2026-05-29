@@ -67,3 +67,20 @@ APIキーでCodexを使う場合は、ChatGPT Plus枠ではなくAPI課金にな
 - 変更前に `git status` を確認する。
 - 変更後に `git diff --stat` と変更理由を出す。
 - 可能なら構文確認、テスト、起動確認を行う。
+
+## Windows環境における非対話型呼び出しのエラー回避方法（HOWTO）
+
+Antigravityなどの外部エージェント（非対話型プログラム）から、Windows環境上のPowerShell経由でCodex CLIを呼び出す際、以下の2つの制限によりエラーが発生する場合があります。
+
+### 1. PowerShellのセキュリティ制限（ExecutionPolicy）
+- **現象**: `running scripts is disabled on this system.（このシステムではスクリプトの実行が無効になっています）` というエラーが発生し、インストールされた `codex.ps1` が実行できない。
+- **回避策**:
+  - PowerShellではなく、スクリプト実行制限を受けない `cmd.exe` を通して起動する（`codex` コマンドの代わりに、コマンドプロンプト用の `codex.cmd` を呼び出す）。
+  - または、実行時に `-ExecutionPolicy Bypass` オプションを明示的に指定して実行する。
+
+### 2. 対話画面（TUI）の要求制限
+- **現象**: `Error: stdin is not a terminal` というエラーが発生する。これはCodex CLIが通常起動時に対話型のUI画面を表示しようとしますが、非対話環境から呼び出されたために安全のために停止する制限です。
+- **回避策**:
+  - **execモードを使用する**: 対話画面を開かず、一回限りの命令として実行する `codex exec` もしくは `codex.cmd exec` モードを使用する。
+  - **標準入力を閉じる**: コマンドの末尾に `< NUL` （Windowsのコマンドプロンプト）または標準入力のリダイレクトを行い、入力待ちでフリーズしないように制御する。
+  - **承認ポリシーを設定する**: 承認待ちで止まらないように、非対話実行時は `--ask-for-approval never` オプションを付与する。
