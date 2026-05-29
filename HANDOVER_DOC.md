@@ -110,3 +110,22 @@ ai_workflow_templates/
 * **本ファイルへの動的記録の統合**
   - AIエージェントは、作業中にプログラムの追加・変更を行った場合や、設計の決定を行った場合、その機能解説や作成されたプログラムのパス・説明、および現在の開発状況を、すべて本ファイルの該当セクション（進捗状況など）に直接自動で追記・更新してください。
   - 本ファイルはGitで管理され、人間とAIが常に同じファイルを見て正確な進捗とドキュメントを同期します。
+
+---
+
+## 📈 動的開発進捗ログ (AI自動更新セクション)
+
+AIエージェントが本プロジェクトで行った最新の実装状況や設計変更のログです。作業完了時にAIが自動追記します。
+
+### 2026-05-29 (環境構築・テンプレート改善)
+* **実施内容**:
+  * Windows PCにおけるAI共同開発環境の初期セットアップを完了。
+  * `C:\Users\islab\.gemini\GEMINI.md` にグローバルルールを定義し、`.gemini/rule.md` を廃止して本ファイル（`HANDOVER_DOC.md`）へ進捗・引き継ぎ記録を一元化するポリシーに移行。
+  * Codex CLI に Brave Search、Tavily、GitHub 検索のMCPサーバーを登録し、不要となった `brave-search` を削除（Tavilyに一本化）。
+  * 動作確認用のテストフォルダ `C:\Users\islab\ai_env_test_project\` を作成し、`setup-ai-env.ps1` の自動展開と、CodexによるTavily経由の天気予報調査（`docs/research/weather_report.md` 生成）のテストを実行。正常に完遂を確認。
+* **作成・更新したプログラム・設定ファイル**:
+  * [setup-ai-env.ps1](file:///C:/Users/islab/ai_workflow_templates/setup-ai-env.ps1) : テンプレートの自動展開とGit初期化を行うスクリプト（検証済み）。
+  * [codex_collaboration.md](file:///C:/Users/islab/ai_workflow_templates/docs/agent_rules/codex_collaboration.md) : Windows環境における非対話型エラーの回避策（実行ポリシー、TUIフリーズ、サンドボックス制限、文字化け対策リダイレクトHOWTO）およびAI絶対厳守ルールを追記。
+  * [search_research_workflow.md](file:///C:/Users/islab/ai_workflow_templates/docs/agent_rules/search_research_workflow.md) : TavilyとBrave Searchの特徴と、無料枠における制限（クレジットカード登録の有無など）の解説を追記。
+  * [HANDOVER_DOC.md](file:///C:/Users/islab/ai_workflow_templates/HANDOVER_DOC.md) : 引継ぎ・進捗管理の `HANDOVER_DOC.md` 一本化ポリシーを追加、不要な `.gemini/` 除外を解除。
+* **リモートコミットID**: `2aa06df` (および今回の進捗追記分)
