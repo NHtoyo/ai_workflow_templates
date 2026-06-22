@@ -294,4 +294,5 @@ AIエージェントが本プロジェクトで行った最新の実装状況や
 ### 2026-06-23 (ドキュメント更新ルールの復元)
 * **実施内容**:
   * 旧ファイルから移行漏れとなっていた「自発的ドキュメント更新の義務 (Proactive Documentation Policy)」を `AGENTS.md` に復元し、テンプレートおよびホスト側に適用。
+  * ユーザーからの追加指摘により、さらに移行漏れが判明した「実行効率化・ユーザーUX保護ポリシー (Execution Efficiency Policy)」および「Proactive Documentation Policy の完全版」を `AGENTS.md` に完全復元。
   * 本ポリシーに従い、作業内容を即座に `HANDOVER_DOC.md` へ記録。
