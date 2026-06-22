@@ -295,4 +295,5 @@ AIエージェントが本プロジェクトで行った最新の実装状況や
 * **実施内容**:
   * 旧ファイルから移行漏れとなっていた「自発的ドキュメント更新の義務 (Proactive Documentation Policy)」を `AGENTS.md` に復元し、テンプレートおよびホスト側に適用。
   * ユーザーからの追加指摘により、さらに移行漏れが判明した「実行効率化・ユーザーUX保護ポリシー (Execution Efficiency Policy)」および「Proactive Documentation Policy の完全版」を `AGENTS.md` に完全復元。
-  * 本ポリシーに従い、作業内容を即座に `HANDOVER_DOC.md` へ記録。
+  * 「文書更新時の記述ルール（フォーマット維持）」に関する詳細な指定（既存フォーマットの絶対維持、明瞭なマークダウンとリンクの使用）を [AGENTS.md](file:///C:/Users/0722h/ai_workflow_templates/antigravity_global_rules/AGENTS.md) へ追記。
+  * 本ポリシーに従い、作業内容を即座に [HANDOVER_DOC.md](file:///C:/Users/0722h/ai_workflow_templates/HANDOVER_DOC.md) へ記録。
