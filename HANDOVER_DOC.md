@@ -120,7 +120,7 @@ AIエージェントが本プロジェクトで行った最新の実装状況や
 ### 2026-05-29 (環境構築・テンプレート改善)
 * **実施内容**:
   * Windows PCにおけるAI共同開発環境の初期セットアップを完了。
-  * `C:\Users\islab\.gemini\GEMINI.md` にグローバルルールを定義し、`.gemini/rule.md` を廃止して本ファイル（`HANDOVER_DOC.md`）へ進捗・引き継ぎ記録を一元化するポリシーに移行。
+  * `C:\Users\0722h\.gemini\config\AGENTS.md` にグローバルルールを定義し、`.gemini/rule.md` を廃止して本ファイル（`HANDOVER_DOC.md`）へ進捗・引き継ぎ記録を一元化するポリシーに移行。
   * Codex CLI に Brave Search、Tavily、GitHub 検索のMCPサーバーを登録し、不要となった `brave-search` を削除（Tavilyに一本化）。
   * 動作確認用のテストフォルダ `C:\Users\islab\ai_env_test_project\` を作成し、`setup-ai-env.ps1` の自動展開と、CodexによるTavily経由の天気予報調査（`docs/research/weather_report.md` 生成）のテストを実行。正常に完遂を確認。
 * **作成・更新したプログラム・設定ファイル**:
@@ -142,3 +142,9 @@ AIエージェントが本プロジェクトで行った最新の実装状況や
 * **対応・解決策**:
   * PowerShell環境固有の制限を回避するため、Codexを呼び出す際のシェルをコマンドプロンプト（`cmd.exe /c`）に切り替えました。
   * 同時に、標準入力を強制的に遮断するコマンド（`< NUL`）を付与することで、「入力待ちによるフリーズ」を根本から防ぎ、非インタラクティブなバックグラウンドタスクとして安定稼働させる手法を確立しました。
+
+### 2026-06-22 (グローバルルールのアーキテクチャ統合)
+* **実施内容**:
+  * グローバルルールの配置場所を非公式パス（`.gemini/GEMINI.md`）から、Antigravity標準の公式パス（`.gemini/config/AGENTS.md`）に統合。これにより仕様書と現実のズレ（二重管理による混乱）を解消。
+  * テンプレートリポジトリ内の旧 `GEMINI.md` を `AGENTS.md` にリネーム。
+  * `setup-ai-env.ps1` を修正し、他のPCでクローン・セットアップを実行した際に、自動的にホストPCの `~/.gemini/config/AGENTS.md` へルールがデプロイされる処理を追加実装。

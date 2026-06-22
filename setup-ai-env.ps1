@@ -98,6 +98,21 @@ if (-not $addedAny) {
     Write-Host "  .gitignore is already up to date." -ForegroundColor DarkGray
 }
 
+# 5. Deploy Global Rules to Host PC
+Write-Host "5. Deploying Global Rules to Host PC..." -ForegroundColor Yellow
+$globalRulesSrc = Join-Path $PSScriptRoot "antigravity_global_rules\AGENTS.md"
+$globalConfigDir = Join-Path $env:USERPROFILE ".gemini\config"
+if (-not (Test-Path $globalConfigDir)) {
+    New-Item -ItemType Directory -Path $globalConfigDir | Out-Null
+}
+$globalRulesDest = Join-Path $globalConfigDir "AGENTS.md"
+if (Test-Path $globalRulesSrc) {
+    Copy-Item -Path $globalRulesSrc -Destination $globalRulesDest -Force
+    Write-Host "  Deployed: $globalRulesDest"
+} else {
+    Write-Warning "  Warning: Global rules source not found at $globalRulesSrc"
+}
+
 Write-Host ""
 Write-Host "=============================================" -ForegroundColor Green
 Write-Host "  Setup completed successfully!" -ForegroundColor Green

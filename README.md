@@ -22,7 +22,7 @@
 
 PowerShellスクリプトを使用せず、手動でセットアップする場合は以下を行います。
 
-1. `antigravity_global_rules/GEMINI.md` の内容を Antigravity の Global Rules に貼り付ける。
+1. `antigravity_global_rules/AGENTS.md` の内容を `C:\Users\0722h\.gemini\config\AGENTS.md` (Global Customizations Root) にコピーする。
 2. `project/AGENTS.md` を自分のプロジェクト直下に置く。
 3. `project/.agent/rules/00_project_ai_workflow.md` を自分のプロジェクトの `.agent/rules/` に置く。
 4. `project/docs/agent_rules/` と `project/docs/templates/` を自分のプロジェクトにコピーする。
