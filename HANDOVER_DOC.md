@@ -295,5 +295,16 @@ AIエージェントが本プロジェクトで行った最新の実装状況や
 * **実施内容**:
   * 旧ファイルから移行漏れとなっていた「自発的ドキュメント更新の義務 (Proactive Documentation Policy)」を `AGENTS.md` に復元し、テンプレートおよびホスト側に適用。
   * ユーザーからの追加指摘により、さらに移行漏れが判明した「実行効率化・ユーザーUX保護ポリシー (Execution Efficiency Policy)」および「Proactive Documentation Policy の完全版」を `AGENTS.md` に完全復元。
-  * 「文書更新時の記述ルール（フォーマット維持）」に関する詳細な指定（既存フォーマットの絶対維持、明瞭なマークダウンとリンクの使用）を [AGENTS.md](file:///C:/Users/0722h/ai_workflow_templates/antigravity_global_rules/AGENTS.md) へ追記。
   * 本ポリシーに従い、作業内容を即座に [HANDOVER_DOC.md](file:///C:/Users/0722h/ai_workflow_templates/HANDOVER_DOC.md) へ記録。
+  * 本ファイルの参照パス内の `0722h` などの他環境ユーザー名を、このPC環境 (`islab`) に適合するよう一部修正。
+
+### 2026-06-23 (グローバルルールの完全統合とマージ反映)
+* **実施内容**:
+  * 旧 `GEMINI.md` にのみ記載されていた詳細ルール（詳細な作業承認リスト、秘密情報の取り扱い、作業前確認リスト、検索MCPの具体的な使い分け、報告フォーマット）を、最新の `antigravity_global_rules/AGENTS.md` に漏れなく統合・マージ。
+  * グローバル展開スクリプトのパス指定を本PCの構成（`islab`）に修正。
+  * `setup-ai-env.ps1` を実行し、マージ・修正済みの新グローバルルールを `~/.gemini/config/AGENTS.md` に配備。古い `GEMINI.md` はクリーンアップせず残存。
+  * 以上の変更をリポジトリへコミットし、Gitへプッシュ。
+* **作成・更新したプログラム・設定ファイル**:
+  * [antigravity_global_rules/AGENTS.md](file:///C:/Users/islab/ai_workflow_templates/antigravity_global_rules/AGENTS.md) : 旧GEMINI.mdの重要ルールをマージした完全版グローバルルール。
+  * [HANDOVER_DOC.md](file:///C:/Users/islab/ai_workflow_templates/HANDOVER_DOC.md) : 今回のグローバルルール統合の作業ログを追記。
+
