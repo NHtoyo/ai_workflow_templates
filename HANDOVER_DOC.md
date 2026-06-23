@@ -308,3 +308,7 @@ AIエージェントが本プロジェクトで行った最新の実装状況や
   * [antigravity_global_rules/AGENTS.md](file:///C:/Users/islab/ai_workflow_templates/antigravity_global_rules/AGENTS.md) : 旧GEMINI.mdの重要ルールをマージした完全版グローバルルール。
   * [HANDOVER_DOC.md](file:///C:/Users/islab/ai_workflow_templates/HANDOVER_DOC.md) : 今回のグローバルルール統合の作業ログを追記。
 
+### 2026-06-23 (グローバルルールのリファクタリング・スリム化)
+* **実施内容**:
+  * `antigravity_global_rules/AGENTS.md` が統合によって冗長化していたため、禁止事項や制約の意味を一切欠落させずに、重複箇所（環境セットアップ指示、ドキュメント更新ルールの分散など）を整理・統合してスリム化を実施。
+  * スリム化された新グローバルルールを `setup-ai-env.ps1` 経由で再配備し、本ファイルおよびリポジトリを更新してプッシュ完了。
